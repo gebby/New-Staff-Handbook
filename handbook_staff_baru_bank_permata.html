@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Handbook Staff Baru - Bank Permata</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        permata: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#0d2c54', // Corporate Navy
+                            accent: '#007a3d' // Permata Green
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .tab-btn.active {
+            background-color: #047857;
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(4, 120, 87, 0.3);
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col bg-slate-50">
+
+    <!-- Initial Full-Screen Login Page -->
+    <div id="loginScreen" class="fixed inset-0 z-50 bg-gradient-to-br from-permata-900 via-slate-900 to-permata-800 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="max-w-md w-full bg-white/95 backdrop-blur-md rounded-2xl p-6 sm:p-8 shadow-2xl border border-white/20 my-auto">
+            
+            <!-- Header Logo & Branding -->
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-permata-700 to-emerald-500 mx-auto flex items-center justify-center text-white font-black text-2xl shadow-lg mb-3">
+                    <i class="fa-solid fa-building-columns"></i>
+                </div>
+                <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">HANDBOOK STAFF BARU</h2>
+                <p class="text-xs text-permata-700 font-bold uppercase tracking-wider mt-0.5">Bank Permata Portal</p>
+                <p class="text-xs text-slate-500 mt-2">Platform Terintegrasi Pusat Informasi & Acuan Staff Baru Bank Permata.</p>
+            </div>
+
+            <!-- Error Notification Alert -->
+            <div id="loginErrorMsg" class="hidden mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-600 flex items-center gap-2">
+                <i class="fa-solid fa-circle-exclamation text-base flex-shrink-0"></i>
+                <span id="loginErrorText">Username atau password salah!</span>
+            </div>
+
+            <!-- Main Login Form -->
+            <form onsubmit="handleInitialLogin(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Username</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="initialUsername" required placeholder="Masukkan username..." class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-permata-600 focus:bg-white outline-none transition-all">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Password</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="password" id="initialPassword" required placeholder="Masukkan password..." class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-permata-600 focus:bg-white outline-none transition-all">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-3 bg-permata-700 hover:bg-permata-800 text-white font-bold rounded-xl text-xs transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-to-bracket"></i> Masuk ke Handbook Portal
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Main Portal Content Container (Hidden until logged in) -->
+    <div id="mainPortalApp" class="hidden flex-grow flex flex-col min-h-screen">
+
+        <!-- Top Bar Navigation -->
+        <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <!-- Logo & Portal Title -->
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-permata-700 to-emerald-500 flex items-center justify-center text-white font-bold text-xl shadow-md">
+                            <i class="fa-solid fa-building-columns"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-base sm:text-lg font-black text-slate-900 leading-tight tracking-tight">HANDBOOK STAFF BARU</h1>
+                            <p class="text-[11px] text-permata-700 font-bold uppercase tracking-wider">BANK PERMATA</p>
+                        </div>
+                    </div>
+
+                    <!-- Global Search & User Profile -->
+                    <div class="flex items-center space-x-3 sm:space-x-4">
+                        <!-- Global Search Box -->
+                        <div class="relative hidden md:block w-60">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                            <input type="text" id="globalSearch" onkeyup="handleGlobalSearch()" placeholder="Cari di Handbook Permata..." class="w-full pl-9 pr-4 py-1.5 bg-slate-100 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-permata-600 focus:bg-white transition-all">
+                        </div>
+
+                        <!-- Progress Tracker -->
+                        <div class="hidden sm:flex items-center bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
+                            <div class="text-right mr-3">
+                                <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Progres Handbook</div>
+                                <div class="text-xs font-bold text-permata-700" id="progressPercentText">0% Selesai</div>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-permata-700 font-bold text-xs shadow-inner border border-slate-200" id="progressBadge">
+                                0/7
+                            </div>
+                        </div>
+
+                        <!-- User Profile & Settings -->
+                        <div class="flex items-center space-x-2 border-l border-slate-200 pl-3">
+                            <button onclick="openModal('settingsModal')" class="flex items-center space-x-2 p-1 rounded-xl hover:bg-slate-100 transition-colors">
+                                <div class="w-9 h-9 rounded-full bg-permata-100 text-permata-800 border-2 border-permata-600 flex items-center justify-center font-bold text-xs" id="userAvatar">
+                                    BP
+                                </div>
+                                <div class="hidden lg:block text-left">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-xs font-semibold text-slate-800" id="userNameDisplay">Staff Baru Permata</span>
+                                        <span id="userRoleBadge" class="px-1.5 py-0.5 text-[9px] font-bold rounded uppercase bg-emerald-100 text-emerald-700">STAFF</span>
+                                    </div>
+                                    <div class="text-[10px] text-slate-500" id="userDeptDisplay">Divisi Operational Banking</div>
+                                </div>
+                            </button>
+                            
+                            <!-- Logout Button -->
+                            <button onclick="handleLogout()" title="Keluar / Logout" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors flex items-center gap-1 text-xs font-semibold">
+                                <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                                <span class="hidden sm:inline">Keluar</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Global Progress Bar Under Header -->
+            <div class="w-full bg-slate-100 h-1">
+                <div id="overallProgressBar" class="bg-gradient-to-r from-permata-600 to-emerald-400 h-1 transition-all duration-500" style="width: 0%"></div>
+            </div>
+        </header>
+
+        <!-- Main Content Container -->
+        <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+            <!-- Hero Banner: Permata Platform -->
+            <div class="bg-gradient-to-r from-permata-900 via-slate-900 to-permata-800 rounded-2xl p-6 sm:p-8 text-white shadow-xl mb-8 relative overflow-hidden border border-permata-700/30">
+                <div class="absolute -right-10 -bottom-10 w-72 h-72 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="relative z-10 max-w-3xl">
+                    <span class="inline-block bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[11px] font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-wider">
+                        <i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> Aplikasi Wadah Platform Terintegrasi
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-black tracking-tight mb-2">Pusat Informasi & Acuan Staff Baru Bank Permata</h2>
+                    <p class="text-xs sm:text-sm text-slate-200 leading-relaxed mb-6">
+                        Platform terintegrasi sebagai panduan resmi, informasi struktur, etika, aturan, alur proses, dan aplikasi pendukung untuk menyukseskan perjalanan karir Anda di Bank Permata.
+                    </p>
+
+                    <!-- Slogan Badge -->
+                    <div class="p-3 bg-white/10 backdrop-blur-md rounded-xl border border-white/10 mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-quote-left text-emerald-400 text-xl flex-shrink-0"></i>
+                        <p class="text-xs font-bold tracking-wide text-white uppercase italic">
+                            " SATU PORTAL, SEMUA INFORMASI, SUKSES BERSAMA PERMATA "
+                        </p>
+                    </div>
+
+                    <div class="flex flex-wrap gap-3 text-xs">
+                        <button onclick="scrollToContent()" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-black rounded-xl transition-all shadow-md flex items-center gap-2">
+                            <i class="fa-solid fa-layer-group"></i> Jelajahi Papar Isi (7 Modul)
+                        </button>
+                        <button onclick="openModal('quizModal')" class="px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold rounded-xl transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-graduation-cap"></i> Uji Kuis Pemahaman
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features & Benefits Overview Widgets (Reflecting Infographic) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                
+                <!-- Fitur Unggulan Widget -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="flex items-center gap-2 mb-4 text-permata-900 border-b border-slate-100 pb-3">
+                        <div class="w-8 h-8 rounded-lg bg-permata-100 text-permata-700 flex items-center justify-center font-bold">
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <h3 class="font-bold text-sm uppercase tracking-wider">Fitur Unggulan Platform</h3>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80 flex items-start gap-2.5">
+                            <i class="fa-solid fa-magnifying-glass text-permata-600 text-base mt-0.5"></i>
+                            <div>
+                                <h4 class="font-bold text-slate-800">Mudah Dicari</h4>
+                                <p class="text-[11px] text-slate-500">Pencarian cepat & intuitif di seluruh materi.</p>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80 flex items-start gap-2.5">
+                            <i class="fa-solid fa-arrows-rotate text-emerald-600 text-base mt-0.5"></i>
+                            <div>
+                                <h4 class="font-bold text-slate-800">Selalu Update</h4>
+                                <p class="text-[11px] text-slate-500">Informasi terbaru dan terintegrasi otomatis.</p>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80 flex items-start gap-2.5">
+                            <i class="fa-solid fa-shield-halved text-purple-600 text-base mt-0.5"></i>
+                            <div>
+                                <h4 class="font-bold text-slate-800">Akses Aman</h4>
+                                <p class="text-[11px] text-slate-500">Data terjaga dengan standar keamanan perbankan.</p>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80 flex items-start gap-2.5">
+                            <i class="fa-solid fa-mobile-screen-button text-blue-600 text-base mt-0.5"></i>
+                            <div>
+                                <h4 class="font-bold text-slate-800">Akses Kapan Saja</h4>
+                                <p class="text-[11px] text-slate-500">Dapat diakses fleksibel melalui berbagai perangkat.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manfaat Utama Widget -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="flex items-center gap-2 mb-4 text-permata-900 border-b border-slate-100 pb-3">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <h3 class="font-bold text-sm uppercase tracking-wider">Manfaat Bagi Staff Baru</h3>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+                        <div class="p-2.5 bg-emerald-50/60 rounded-xl border border-emerald-100 text-center">
+                            <i class="fa-solid fa-users-gear text-emerald-600 text-lg mb-1 block"></i>
+                            <h4 class="font-bold text-emerald-900 text-[11px]">Mempercepat Adaptasi</h4>
+                        </div>
+                        <div class="p-2.5 bg-blue-50/60 rounded-xl border border-blue-100 text-center">
+                            <i class="fa-solid fa-chart-line text-blue-600 text-lg mb-1 block"></i>
+                            <h4 class="font-bold text-blue-900 text-[11px]">Meningkatkan Produktivitas</h4>
+                        </div>
+                        <div class="p-2.5 bg-amber-50/60 rounded-xl border border-amber-100 text-center">
+                            <i class="fa-solid fa-award text-amber-600 text-lg mb-1 block"></i>
+                            <h4 class="font-bold text-amber-900 text-[11px]">Konsisten & Terstandar</h4>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Module Grid Navigation (Papar Isi 01 - 07) -->
+            <section id="moduleNav" class="mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-black text-slate-800 uppercase tracking-wider">Papar Isi Handbook Orientasi (7 Modul)</h3>
+                    <span class="text-xs text-slate-500">Klik modul untuk mengakses materi & sumber terkait</span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
+                    
+                    <!-- 01 Struktur Organisasi -->
+                    <button onclick="switchTab('tab-01')" id="btn-tab-01" class="tab-btn active p-3 rounded-xl border border-slate-200 bg-white text-left transition-all duration-200 hover:border-permata-600 hover:shadow-md group flex flex-col justify-between h-32">
+                        <div class="flex items-center justify-between w-full">
+                            <span class="text-xs font-black text-slate-400 group-hover:text-permata-600">01</span>
+                            <div class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-[9px] hidden" id="check-tab-01">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <i class="fa-solid fa-sitemap text-lg mb-1 text-permata-700 group-hover:scale-110 transition-transform block"></i>
+                            <h4 class="font-bold text-xs line-clamp-2">Struktur Organisasi</h4>
+                        </div>
+                    </button>
+
+                    <!-- 02 Tugas & Tanggung Jawab -->
+                    <button onclick="switchTab('tab-02')" id="btn-tab-02" class="tab-btn p-3 rounded-xl border border-slate-200 bg-white text-left transition-all duration-200 hover:border-permata-600 hover:shadow-md group flex flex-col justify-between h-32">
+                        <div class="flex items-center justify-between w-full">
+                            <span class="text-xs font-black text-slate-400 group-hover:text-permata-600">02</span>
+                            <div class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-[9px] hidden" id="check-tab-02">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <i class="fa-solid fa-clipboard-list text-lg mb-1 text-permata-700 group-hover:scale-110 transition-transform block"></i>
+                            <h4 class="font-bold text-xs line-clamp-2">Tugas & Tanggung Jawab</h4>
+                        </div>
+                    </button>
+
+                    <!-- 03 Stakeholders -->
+                    <button onclick="switchTab('tab-03')" id="btn-tab-03" class="tab-btn p-3 rounded-xl border border-slate-200 bg-white text-left transition-all duration-200 hover:border-permata-600 hover:shadow-md group flex flex-col justify-between h-32">
+                        <div class="flex items-center justify-between w-full">
+                            <span class="text-xs font-black text-slate-400 group-hover:text-permata-600">03</span>
+                            <div class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-[9px] hidden" id="check-tab-03">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <i class="fa-solid fa-handshake text-lg mb-1 text-permata-700 group-hover:scale-110 transition-transform block"></i>
+                            <h4 class="font-bold text-xs line-clamp-2">Stakeholders</h4>
+                        </div>
+                    </button>
+
+                    <!-- 04 Aturan -->
+                    <button onclick="switchTab('tab-04')" id="btn-tab-04" class="tab-btn p-3 rounded-xl border border-slate-200 bg-white text-left transition-all duration-200 hover:border-permata-600 hover:shadow-md group flex flex-col justify-between h-32">
+                        <div class="flex items-center justify-between w-full">
+                            <span class="text-xs font-black text-slate-400 group-hover:text-permata-600">04</span>
+                            <div class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-[9px] hidden" id="check-tab-04">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <i class="fa-solid fa-book-bookmark text-lg mb-1 text-permata-700 group-hover:scale-110 transition-transform block"></i>
+                            <h4 class="font-bold text-xs line-clamp-2">Aturan & Kebijakan</h4>
+                        </div>
+                    </button>
+
+                    <!-- 05 Etika & Pedoman -->
+                    <button onclick="switchTab('tab-05')" id="btn-tab-05" class="tab-btn p-3 rounded-xl border border-slate-200 bg-white text-left transition-all duration-200 hover:border-permata-600 hover:shadow-md group flex flex-col justify-between h-32">
+                        <div class="flex items-center justify-between w-full">
+                            <span class="text-xs font-black text-slate-400 group-hover:text-permata-600">05</span>
+                            <div class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-[9px] hidden" id="check-tab-05">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <i class="fa-solid fa-scale-balanced text-lg mb-1 text-permata-700 group-hover:scale-110 transition-transform block"></i>
+                            <h4 class="font-bold text-xs line-clamp-2">Etika & Pedoman</h4>
+                        </div>
+                    </button>
+
+                    <!-- 06 Flow Proses -->
+                    <button onclick="switchTab('tab-06')" id="btn-tab-06" class="tab-btn p-3 rounded-xl border border-slate-200 bg-white text-left transition-all duration-200 hover:border-permata-600 hover:shadow-md group flex flex-col justify-between h-32">
+                        <div class="flex items-center justify-between w-full">
+                            <span class="text-xs font-black text-slate-400 group-hover:text-permata-600">06</span>
+                            <div class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-[9px] hidden" id="check-tab-06">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <i class="fa-solid fa-diagram-project text-lg mb-1 text-permata-700 group-hover:scale-110 transition-transform block"></i>
+                            <h4 class="font-bold text-xs line-clamp-2">Flow Proses</h4>
+                        </div>
+                    </button>
+
+                    <!-- 07 Aplikasi Pendukung -->
+                    <button onclick="switchTab('tab-07')" id="btn-tab-07" class="tab-btn p-3 rounded-xl border border-slate-200 bg-white text-left transition-all duration-200 hover:border-permata-600 hover:shadow-md group flex flex-col justify-between h-32">
+                        <div class="flex items-center justify-between w-full">
+                            <span class="text-xs font-black text-slate-400 group-hover:text-permata-600">07</span>
+                            <div class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-[9px] hidden" id="check-tab-07">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <i class="fa-solid fa-laptop-code text-lg mb-1 text-permata-700 group-hover:scale-110 transition-transform block"></i>
+                            <h4 class="font-bold text-xs line-clamp-2">Aplikasi Pendukung</h4>
+                        </div>
+                    </button>
+
+                </div>
+            </section>
+
+            <!-- Content Sections Wrapper -->
+            <div id="contentSections">
+
+                <!-- ================= MODULE 01: STRUKTUR ORGANISASI ================= -->
+                <section id="tab-01" class="tab-content bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                    <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200 mb-6">
+                        <div>
+                            <span class="text-xs font-bold text-permata-700 uppercase tracking-widest">Modul 01</span>
+                            <h2 class="text-xl font-black text-slate-900">Struktur Organisasi Bank Permata</h2>
+                            <p class="text-xs text-slate-500 mt-1">Hierarki kepemimpinan, jajaran direksi, dan jajaran kepemimpinan divisi.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="openCrudModal('org')" class="admin-only hidden px-3.5 py-2 bg-permata-700 hover:bg-permata-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-sm">
+                                <i class="fa-solid fa-plus text-xs"></i> Tambah Pejabat
+                            </button>
+                            <button onclick="markModuleComplete('tab-01')" class="px-4 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 text-xs font-semibold rounded-xl flex items-center gap-2 transition-all">
+                                <i class="fa-solid fa-circle-check"></i> Tandai Selesai
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-6 bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="font-semibold text-slate-600">Filter Divisi:</span>
+                            <select id="deptFilter" onchange="renderOrgChart()" class="bg-white border border-slate-300 text-slate-700 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-permata-600">
+                                <option value="all">Semua Divisi</option>
+                                <option value="direksi">Direksi & Board</option>
+                                <option value="hrd">Human Capital</option>
+                                <option value="it">Technology & Operations</option>
+                                <option value="ops">Retail & Wholesale Banking</option>
+                                <option value="finance">Finance & Governance</option>
+                            </select>
+                        </div>
+                        <button onclick="triggerDataSync('Struktur Organisasi')" class="text-permata-700 hover:text-permata-900 font-bold flex items-center gap-1.5 bg-permata-50 px-3 py-1.5 rounded-lg border border-permata-200">
+                            <i class="fa-solid fa-rotate text-xs"></i> Ambil Data Terbaru dari Portal Permata
+                        </button>
+                    </div>
+
+                    <div id="orgChartContainer" class="py-4 overflow-x-auto custom-scrollbar">
+                        <!-- Rendered via JS -->
+                    </div>
+                </section>
+
+                <!-- ================= MODULE 02: TUGAS & TANGGUNG JAWAB ================= -->
+                <section id="tab-02" class="tab-content hidden bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                    <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200 mb-6">
+                        <div>
+                            <span class="text-xs font-bold text-permata-700 uppercase tracking-widest">Modul 02</span>
+                            <h2 class="text-xl font-black text-slate-900">Tugas & Tanggung Jawab Peran</h2>
+                            <p class="text-xs text-slate-500 mt-1">Rincian rutin kerja harian, mingguan, bulanan, serta RACI matrix posisi perbankan.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="openCrudModal('raci')" class="admin-only hidden px-3.5 py-2 bg-permata-700 hover:bg-permata-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-sm">
+                                <i class="fa-solid fa-plus text-xs"></i> Tambah Peran RACI
+                            </button>
+                            <button onclick="markModuleComplete('tab-02')" class="px-4 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 text-xs font-semibold rounded-xl flex items-center gap-2 transition-all">
+                                <i class="fa-solid fa-circle-check"></i> Tandai Selesai
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="dutiesContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                        <!-- Rendered via JS -->
+                    </div>
+
+                    <!-- RACI Matrix Table -->
+                    <div class="border border-slate-200 rounded-xl overflow-hidden">
+                        <div class="bg-slate-100 px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+                            <h3 class="font-bold text-xs sm:text-sm text-slate-800 uppercase tracking-wider">Matriks Peran RACI Staff Baru (Responsible, Accountable, Consulted, Informed)</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs text-slate-700">
+                                <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-bold">
+                                    <tr>
+                                        <th class="px-4 py-3">Aktivitas Operasional Perbankan</th>
+                                        <th class="px-4 py-3 text-center">Staff Baru (R)</th>
+                                        <th class="px-4 py-3 text-center">Buddy (C)</th>
+                                        <th class="px-4 py-3 text-center">Team Lead (A)</th>
+                                        <th class="px-4 py-3 text-center">Division Head (I)</th>
+                                        <th class="admin-only hidden px-4 py-3 text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="raciTableBody" class="divide-y divide-slate-100">
+                                    <!-- Rendered via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ================= MODULE 03: STAKEHOLDERS ================= -->
+                <section id="tab-03" class="tab-content hidden bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                    <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200 mb-6">
+                        <div>
+                            <span class="text-xs font-bold text-permata-700 uppercase tracking-widest">Modul 03</span>
+                            <h2 class="text-xl font-black text-slate-900">Stakeholders & Unit Terkait</h2>
+                            <p class="text-xs text-slate-500 mt-1">Pihak-pihak terkait yang berperan dalam operasional Bank Permata.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="openCrudModal('stakeholder')" class="admin-only hidden px-3.5 py-2 bg-permata-700 hover:bg-permata-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-sm">
+                                <i class="fa-solid fa-plus text-xs"></i> Tambah Stakeholder
+                            </button>
+                            <button onclick="markModuleComplete('tab-03')" class="px-4 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 text-xs font-semibold rounded-xl flex items-center gap-2 transition-all">
+                                <i class="fa-solid fa-circle-check"></i> Tandai Selesai
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 mb-6">
+                        <button onclick="filterStakeholders('all', event)" class="sh-filter-btn px-3 py-1.5 bg-permata-700 text-white text-xs font-medium rounded-lg">Semua Unit</button>
+                        <button onclick="filterStakeholders('internal', event)" class="sh-filter-btn px-3 py-1.5 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-medium rounded-lg">Internal Bank Permata</button>
+                        <button onclick="filterStakeholders('external', event)" class="sh-filter-btn px-3 py-1.5 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-medium rounded-lg">Regulator & Eksternal</button>
+                    </div>
+
+                    <div id="stakeholdersGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Rendered via JS -->
+                    </div>
+                </section>
+
+                <!-- ================= MODULE 04: ATURAN ================= -->
+                <section id="tab-04" class="tab-content hidden bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                    <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200 mb-6">
+                        <div>
+                            <span class="text-xs font-bold text-permata-700 uppercase tracking-widest">Modul 04</span>
+                            <h2 class="text-xl font-black text-slate-900">Aturan & Ketentuan Kebijakan</h2>
+                            <p class="text-xs text-slate-500 mt-1">Regulasi presensi, kerahasiaan perbankan, pakaian kerja, dan fasilitas karyawan.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="openCrudModal('rule')" class="admin-only hidden px-3.5 py-2 bg-permata-700 hover:bg-permata-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-sm">
+                                <i class="fa-solid fa-plus text-xs"></i> Tambah Aturan
+                            </button>
+                            <button onclick="markModuleComplete('tab-04')" class="px-4 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 text-xs font-semibold rounded-xl flex items-center gap-2 transition-all">
+                                <i class="fa-solid fa-circle-check"></i> Tandai Selesai
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="ruleSearchInput" onkeyup="filterRules()" placeholder="Cari aturan perbankan..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 text-xs rounded-xl focus:outline-none focus:ring-2 focus:ring-permata-600">
+                    </div>
+
+                    <div id="rulesAccordion" class="space-y-3">
+                        <!-- Rendered via JS -->
+                    </div>
+                </section>
+
+                <!-- ================= MODULE 05: ETIKA & PEDOMAN (NEW MODULE FROM INFOGRAPHIC) ================= -->
+                <section id="tab-05" class="tab-content hidden bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                    <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200 mb-6">
+                        <div>
+                            <span class="text-xs font-bold text-permata-700 uppercase tracking-widest">Modul 05</span>
+                            <h2 class="text-xl font-black text-slate-900">Etika & Pedoman Perilaku (Code of Conduct)</h2>
+                            <p class="text-xs text-slate-500 mt-1">Pedoman perilaku, etika perbankan, integritas, dan nilai-nilai budaya Bank Permata.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="openCrudModal('ethics')" class="admin-only hidden px-3.5 py-2 bg-permata-700 hover:bg-permata-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-sm">
+                                <i class="fa-solid fa-plus text-xs"></i> Tambah Pedoman
+                            </button>
+                            <button onclick="markModuleComplete('tab-05')" class="px-4 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 text-xs font-semibold rounded-xl flex items-center gap-2 transition-all">
+                                <i class="fa-solid fa-circle-check"></i> Tandai Selesai
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="ethicsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Rendered via JS -->
+                    </div>
+                </section>
+
+                <!-- ================= MODULE 06: FLOW PROSES ================= -->
+                <section id="tab-06" class="tab-content hidden bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                    <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200 mb-6">
+                        <div>
+                            <span class="text-xs font-bold text-permata-700 uppercase tracking-widest">Modul 06</span>
+                            <h2 class="text-xl font-black text-slate-900">Flow Proses Operasional Utama</h2>
+                            <p class="text-xs text-slate-500 mt-1">Alur kerja sistematis untuk orientasi staff baru dan proses operasional perbankan.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="openCrudModal('flow')" class="admin-only hidden px-3.5 py-2 bg-permata-700 hover:bg-permata-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-sm">
+                                <i class="fa-solid fa-plus text-xs"></i> Tambah Tahap Flow
+                            </button>
+                            <button onclick="markModuleComplete('tab-06')" class="px-4 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 text-xs font-semibold rounded-xl flex items-center gap-2 transition-all">
+                                <i class="fa-solid fa-circle-check"></i> Tandai Selesai
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="flowProcessContainer" class="py-2">
+                        <!-- Rendered via JS -->
+                    </div>
+                </section>
+
+                <!-- ================= MODULE 07: APLIKASI PENDUKUNG ================= -->
+                <section id="tab-07" class="tab-content hidden bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                    <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200 mb-6">
+                        <div>
+                            <span class="text-xs font-bold text-permata-700 uppercase tracking-widest">Modul 07</span>
+                            <h2 class="text-xl font-black text-slate-900">Aplikasi & Perangkat Pendukung Kerja</h2>
+                            <p class="text-xs text-slate-500 mt-1">Daftar sistem informasi internal Bank Permata dan panduan cara mengaksesnya.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="openCrudModal('app')" class="admin-only hidden px-3.5 py-2 bg-permata-700 hover:bg-permata-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-sm">
+                                <i class="fa-solid fa-plus text-xs"></i> Tambah Aplikasi
+                            </button>
+                            <button onclick="markModuleComplete('tab-07')" class="px-4 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 text-xs font-semibold rounded-xl flex items-center gap-2 transition-all">
+                                <i class="fa-solid fa-circle-check"></i> Tandai Selesai
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="appsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Rendered via JS -->
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+    <!-- Close Main Portal App Wrapper -->
+    </div>
+
+    <!-- Modal: Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-permata-700 text-lg"></i>
+                    <h3 class="font-bold text-slate-900 text-base">Pengaturan Akun & Handbook</h3>
+                </div>
+                <button onclick="closeModal('settingsModal')" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4 text-xs">
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                    <p class="font-bold text-slate-800 mb-1">Status Pengguna Aktif</p>
+                    <div class="flex items-center justify-between text-slate-600 mt-2">
+                        <span>Nama: <b id="settingsName">Staff Baru</b></span>
+                        <span id="settingsRole" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700 uppercase">STAFF</span>
+                    </div>
+                    <div class="text-slate-500 text-[11px] mt-1">Divisi: <span id="settingsDept">Operational Banking</span></div>
+                </div>
+
+                <div class="border-t border-slate-100 pt-3">
+                    <p class="font-bold text-slate-800 mb-2">Manajemen Progres Orientasi</p>
+                    <button onclick="resetOrientationProgress()" class="w-full text-left p-3 rounded-xl border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-900 flex items-center justify-between transition-colors">
+                        <div>
+                            <span class="font-semibold block">Reset Progres Handbook</span>
+                            <span class="text-[10px] text-amber-700">Hapus status centang selesai 7 modul</span>
+                        </div>
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                </div>
+
+                <div class="admin-only hidden border-t border-slate-100 pt-3">
+                    <p class="font-bold text-slate-800 mb-2">Aksi Khusus Administrator</p>
+                    <button onclick="resetAllCrudData()" class="w-full text-left p-3 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-900 flex items-center justify-between transition-colors">
+                        <div>
+                            <span class="font-semibold block">Kembalikan Data Default Permata</span>
+                            <span class="text-[10px] text-rose-700">Reset semua perubahan data CRUD ke setelan pabrik</span>
+                        </div>
+                        <i class="fa-solid fa-trash-arrow-up"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-6 text-right">
+                <button onclick="closeModal('settingsModal')" class="px-4 py-2 bg-slate-100 text-slate-700 font-semibold text-xs rounded-xl hover:bg-slate-200">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Kuis Pemahaman -->
+    <div id="quizModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-permata-700 text-lg"></i>
+                    <h3 class="font-bold text-slate-900 text-base">Kuis Pemahaman Orientasi Permata</h3>
+                </div>
+                <button onclick="closeModal('quizModal')" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="space-y-4 text-xs text-slate-700">
+                <p>Uji pemahaman Anda mengenai 7 Modul Handbook Staff Baru Bank Permata.</p>
+                <div class="bg-permata-50 p-4 rounded-xl border border-permata-200">
+                    <p class="font-semibold text-permata-900 mb-2">Pertanyaan: Apa prinsip etika utama dalam menjaga data transaksi nasabah Bank Permata?</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="q1" value="1"> Dibagikan ke pihak ketiga tanpa izin</label>
+                        <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="q1" value="2" checked> Wajib menjaga Kerahasiaan Perbankan & Data Nasabah</label>
+                        <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="q1" value="3"> Disimpan di perangkat pribadi tanpa kata sandi</label>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end gap-2">
+                <button onclick="closeModal('quizModal')" class="px-4 py-2 bg-slate-100 text-slate-600 text-xs font-semibold rounded-xl">Batal</button>
+                <button onclick="showToast('Selamat! Jawaban kuis Anda benar. Nilai Kuis: 100/100 🎉', 'success'); closeModal('quizModal');" class="px-5 py-2 bg-permata-700 text-white text-xs font-bold rounded-xl hover:bg-permata-800">Kirim Jawaban</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Dynamic CRUD Form -->
+    <div id="crudModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
+                <h3 class="font-bold text-slate-900 text-base" id="crudModalTitle">Tambah / Edit Data Modul</h3>
+                <button onclick="closeModal('crudModal')" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <form id="crudForm" onsubmit="handleCrudSubmit(event)" class="space-y-3 text-xs text-slate-700">
+                <input type="hidden" id="crudTargetModule">
+                <input type="hidden" id="crudItemId">
+
+                <!-- Dynamic Form Fields Container -->
+                <div id="crudFieldsContainer" class="space-y-3">
+                    <!-- Injected via JavaScript -->
+                </div>
+
+                <div class="flex justify-end gap-2 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="closeModal('crudModal')" class="px-4 py-2 bg-slate-100 text-slate-600 font-semibold rounded-xl">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-permata-700 text-white font-bold rounded-xl hover:bg-permata-800 shadow-sm">Simpan Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        // User State Management
+        let currentUser = {
+            name: "Guest User",
+            dept: "Operational Banking",
+            role: "staff" // 'staff' or 'admin'
+        };
+
+        const completedModules = new Set();
+        const totalModules = 7;
+
+        // Valid Authentication Credentials Definition
+        const AUTH_CREDENTIALS = {
+            admin: {
+                username: "admin",
+                password: "admin123",
+                name: "Administrator HR Permata",
+                dept: "Human Capital Division",
+                role: "admin"
+            },
+            guest: {
+                username: "guest",
+                password: "guest",
+                name: "Staff Baru Permata",
+                dept: "Retail Banking Division",
+                role: "staff"
+            }
+        };
+
+        // Quick auto-fill helper for login
+        function fillCredentials(user, pass) {
+            document.getElementById('initialUsername').value = user;
+            document.getElementById('initialPassword').value = pass;
+            document.getElementById('loginErrorMsg').classList.add('hidden');
+        }
+
+        // Initial Login Handler
+        function handleInitialLogin(e) {
+            e.preventDefault();
+            const userInput = document.getElementById('initialUsername').value.trim();
+            const passInput = document.getElementById('initialPassword').value.trim();
+            const errorBox = document.getElementById('loginErrorMsg');
+
+            let authenticatedUser = null;
+
+            if (userInput === AUTH_CREDENTIALS.admin.username && passInput === AUTH_CREDENTIALS.admin.password) {
+                authenticatedUser = AUTH_CREDENTIALS.admin;
+            } else if (userInput === AUTH_CREDENTIALS.guest.username && passInput === AUTH_CREDENTIALS.guest.password) {
+                authenticatedUser = AUTH_CREDENTIALS.guest;
+            }
+
+            if (authenticatedUser) {
+                currentUser = {
+                    name: authenticatedUser.name,
+                    dept: authenticatedUser.dept,
+                    role: authenticatedUser.role
+                };
+
+                sessionStorage.setItem('onboardingSession', JSON.stringify(currentUser));
+                
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('mainPortalApp').classList.remove('hidden');
+
+                errorBox.classList.add('hidden');
+                updateUserUI();
+                showToast(`Selamat datang di Handbook Bank Permata, ${currentUser.name}!`, 'success');
+            } else {
+                document.getElementById('loginErrorText').innerText = 'Username atau password salah! (Gunakan admin/admin123 atau guest/guest)';
+                errorBox.classList.remove('hidden');
+            }
+        }
+
+        // Logout Handler
+        function handleLogout() {
+            sessionStorage.removeItem('onboardingSession');
+            document.getElementById('mainPortalApp').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('initialUsername').value = '';
+            document.getElementById('initialPassword').value = '';
+            showToast('Anda telah keluar dari Handbook Permata.', 'info');
+        }
+
+        // Default Data Structures (Bank Permata Content)
+        const defaultData = {
+            org: [
+                { id: '1', name: 'Meliza Musa Rusli', role: 'Direktur Utama (CEO)', dept: 'direksi', email: 'meliza.rusli@permatabank.co.id', phone: '+62 21 523-7777', desc: 'Memimpin keseluruhan visi, arah strategis, dan transformasi keberlanjutan Bank Permata.' },
+                { id: '2', name: 'Dayan Sadikin', role: 'Direktur Human Capital', dept: 'hrd', email: 'dayan.sadikin@permatabank.co.id', phone: '+62 21 523-7788', desc: 'Pengelola strategi talenta, kultur integritas perbankan, & pengalaman kerja karyawan.' },
+                { id: '3', name: 'Abdy D. Salimin', role: 'Direktur Technology & Operations', dept: 'it', email: 'abdy.salimin@permatabank.co.id', phone: '+62 21 523-7799', desc: 'Pengembang infrastruktur IT perbankan, core banking system, & ketahanan siber.' },
+                { id: '4', name: 'Djani Sutedja', role: 'Direktur Finance & Strategy', dept: 'finance', email: 'djani.sutedja@permatabank.co.id', phone: '+62 21 523-7800', desc: 'Pengendali manajemen keuangan, pelaporan regulasi OJK/BI, & penganggaran.' }
+            ],
+            stakeholders: [
+                { id: '1', type: 'internal', title: 'Human Capital Helpdesk', pic: 'Rina Saputri (HC Partner)', email: 'hc.care@permatabank.co.id', location: 'PermataBank Tower WTC 2 Lt. 15', desc: 'Menangani administrasi kepegawaian, benefit kesehatan, & status onboarding.', color: 'emerald', sourceUrl: 'https://www.permatabank.com' },
+                { id: '2', type: 'internal', title: 'IT Service Desk & Cyber Security', pic: 'Budi Hartono (IT Ops)', email: 'itservicedesk@permatabank.co.id', location: 'Ext. 8888 / Portal IT', desc: 'Penyediaan akun e-mail, token akses VPN, laptop dinas, & tiket support teknis.', color: 'blue', sourceUrl: 'https://www.permatabank.com' },
+                { id: '3', type: 'external', title: 'Otoritas Jasa Keuangan (OJK)', pic: 'Regulator Perbankan', email: 'konsumen@ojk.go.id', location: 'Gedung Soemitro Djojohadikusumo', desc: 'Lembaga independen pengawas dan regulator tata kelola jasa keuangan perbankan.', color: 'purple', sourceUrl: 'https://www.ojk.go.id' },
+                { id: '4', type: 'external', title: 'Bank Indonesia (BI)', pic: 'Bank Sentral Republik Indonesia', email: 'bicara@bi.go.id', location: 'Jl. M.H. Thamrin No.2, Jakarta', desc: 'Regulator sistem pembayaran nasional dan stabilitas moneter perbankan.', color: 'amber', sourceUrl: 'https://www.bi.go.id' }
+            ],
+            duties: {
+                daily: [
+                    "Presensi masuk/pulang tepat waktu menggunakan aplikasi PermataHRIS Mobile.",
+                    "Memeriksa email dinas & pesan saluran koordinasi tim sebelum pukul 08.30 WIB.",
+                    "Mengikuti Daily Standup Morning Sync bersama Supervisor / Team Lead.",
+                    "Menyelesaikan tiket tugas operasional perbankan sesuai SOP yang berlaku."
+                ],
+                weekly: [
+                    "Menyusun Laporan Progres Mingguan (Weekly Status Report) ke Team Lead.",
+                    "Menghadiri Weekly Coordination Meeting & Tinjauan Risiko Divisi.",
+                    "Melakukan review kepatuhan data nasabah dan mitigasi kendala sistem."
+                ],
+                monthly: [
+                    "Evaluasi Masa Probation Bulan ke-1, ke-2, & ke-3 bersama HC & Manager.",
+                    "Pencapaian KPI individual (akurasi transaksi, SLA service, & etika kerja).",
+                    "Penyelesaian modul mandatory e-learning regulasi perbankan tahunan."
+                ]
+            },
+            raci: [
+                { id: '1', task: 'Penyelesaian Modul Mandatory Onboarding', staff: 'R', buddy: 'C', spv: 'A', mgr: 'I' },
+                { id: '2', task: 'Penanganan Transaksi / Tugas Operasional Harian', staff: 'R', buddy: 'C', spv: 'A', mgr: 'I' },
+                { id: '3', task: 'Menjaga Kerahasiaan Data Nasabah (NDA)', staff: 'R', buddy: 'A', spv: 'A', mgr: 'A' },
+                { id: '4', task: 'Review Evaluasi Probation Staff Baru', staff: 'C', buddy: 'C', spv: 'R', mgr: 'A' }
+            ],
+            rules: [
+                { id: '1', title: '1. Jam Kerja & Presensi Geotagging PermataHRIS', icon: 'fa-clock', body: '• <b>Jam Kerja Standar:</b> Senin - Jumat, Pukul 08.00 - 17.00 WIB.<br>• <b>Presensi:</b> Menggunakan Aplikasi PermataHRIS Mobile berbasis lokasi kantor (Radius 50 meter).<br>• <b>Toleransi Keterlambatan:</b> Maksimal 15 menit per bulan.' },
+                { id: '2', title: '2. Kerahasiaan Perbankan & Perlindungan Data Nasabah', icon: 'fa-shield-halved', body: '• Setiap staff wajib menandatangani Non-Disclosure Agreement (NDA).<br>• <b>Clean Desk Policy:</b> Wajib mengunci komputer (Win + L) dan merapikan dokumen saat meninggalkan meja.<br>• Dilarang mengambil foto/video di area operasional perbankan.' },
+                { id: '3', title: '3. Aturan Berpakaian (Professional Banking Dress Code)', icon: 'fa-user-tie', body: '• <b>Senin - Kamis:</b> Executive Business Wear (Kemeja formal, celana/rok bahan, blazer, sepatu pantofel/heels).<br>• <b>Jumat:</b> Batik Resmi / Smart Casual Perbankan.' }
+            ],
+            ethics: [
+                { id: '1', title: 'Integritas Tanpa Kompromi (Integrity)', desc: 'Menjunjung tinggi kejujuran, transparansi, dan menolak segala bentuk gratifikasi serta konflik kepentingan dalam tugas perbankan.', icon: 'fa-scale-balanced', color: 'emerald' },
+                { id: '2', title: 'Orientasi Nasabah (Customer Focus)', desc: 'Memberikan layanan terbaik, responsif, dan memberikan solusi yang tepat bagi kepuasan dan keamanan transaksi nasabah.', icon: 'fa-heart-pulse', color: 'rose' },
+                { id: '3', title: 'Kerjasama & Kolaborasi (Teamwork)', desc: 'Membangun sinergi antar unit kerja tanpa sekat, saling menghargai, dan bahu-membahu mencapai sukses bersama Bank Permata.', icon: 'fa-users-between-lines', color: 'blue' },
+                { id: '4', title: 'Kepatuhan Regulasi (Compliance)', desc: 'Mematuhi seluruh aturan OJK, Bank Indonesia, serta SOP internal Bank Permata dalam setiap alur pekerjaan.', icon: 'fa-shield-cat', color: 'amber' }
+            ],
+            flows: [
+                { id: '1', badge: 'Day 1 - Penyambutan', title: 'Serah Terima Perangkat & Akun System', desc: 'Penerimaan ID Card, laptop kerja, aktivasi e-mail dinas, dan pengenalan dengan Buddy.', color: 'emerald-600' },
+                { id: '2', badge: 'Week 1 - E-Learning', title: 'Pembacaan Handbook & Modul Mandatory', desc: 'Penyelesaian 7 modul di Handbook Portal & modul kepatuhan anti-pencucian uang (APU-PPT).', color: 'permata-600' },
+                { id: '3', badge: 'Week 2-4 - Mentoring', title: 'Praktik Operasional Terbimbing', desc: 'Mulai menjalankan tugas harian di bawah pengawasan Buddy dan Team Lead.', color: 'blue-600' },
+                { id: '4', badge: 'Month 1 - Checkpoint', title: 'Sesi Review Pertama Probation', desc: 'Evaluasi pencapaian 1 bulan pertama bersama HC Partner & Manager.', color: 'purple-600' }
+            ],
+            apps: [
+                { id: '1', title: 'PermataHRIS Mobile', tag: 'Presensi & HC', icon: 'fa-user-check', color: 'emerald', desc: 'Aplikasi presensi harian, pengajuan cuti, klaim klaim medis, dan slip gaji.', guide: 'Login menggunakan NIK dan password akun windows. Lakukan geotagging saat di kantor.' },
+                { id: '2', title: 'Permata Workmail & Teams', tag: 'Komunikasi', icon: 'fa-envelope', color: 'rose', desc: 'Platform email resmi perbankan (@permatabank.co.id) dan saluran rapat video.', guide: 'Wajib mengaktifkan Multi-Factor Authentication (MFA) untuk keamanan surel.' },
+                { id: '3', title: 'Permata Core Banking Platform', tag: 'Sistem Utama', icon: 'fa-vault', color: 'blue', desc: 'Sistem pemrosesan data transaksi nasabah, pembukaan rekening, & otorisasi.', guide: 'Akses memerlukan otorisasi peran divisi dan penggunaan USB Security Key.' },
+                { id: '4', title: 'IT Service Desk Portal', tag: 'Ticketing', icon: 'fa-headset', color: 'purple', desc: 'Portal pengajuan bantuan masalah laptop, reset password, dan akses folder.', guide: 'Buat tiket dengan menyertakan foto pesan error yang dialami.' }
+            ]
+        };
+
+        let appData = JSON.parse(localStorage.getItem('permataHandbookData')) || defaultData;
+
+        function saveAppData() {
+            localStorage.setItem('permataHandbookData', JSON.stringify(appData));
+        }
+
+        // Navigation & Tab Switching Handler
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById(tabId);
+            if (target) target.classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if (activeBtn) activeBtn.classList.add('active');
+        }
+
+        function scrollToContent() {
+            const nav = document.getElementById('moduleNav');
+            if (nav) nav.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function toggleAccordion(elementId) {
+            const content = document.getElementById(elementId);
+            const icon = document.getElementById('icon-' + elementId);
+            if (content) content.classList.toggle('hidden');
+            if (icon) icon.classList.toggle('rotate-180');
+        }
+
+        function handleGlobalSearch() {
+            const query = (document.getElementById('globalSearch')?.value || '').toLowerCase().trim();
+            if (!query) return;
+
+            const ruleInput = document.getElementById('ruleSearchInput');
+            if (ruleInput) {
+                ruleInput.value = query;
+                filterRules();
+                switchTab('tab-04');
+            }
+        }
+
+        function filterRules() {
+            const query = (document.getElementById('ruleSearchInput')?.value || '').toLowerCase();
+            const items = document.querySelectorAll('#rulesAccordion .rule-item');
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                item.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        function openAppGuide(title, guide) {
+            showToast(`<b>${title}</b>: ${guide}`, 'info');
+        }
+
+        function triggerDataSync(moduleName) {
+            showToast(`Mengambil data dan informasi terbaru untuk <b>${moduleName}</b> dari Portal Bank Permata...`, 'info');
+            setTimeout(() => {
+                showToast(`Data <b>${moduleName}</b> berhasil diperbarui & terintegrasi!`, 'success');
+            }, 1200);
+        }
+
+        function showOrgModal(name, role, dept, email, phone, desc) {
+            showToast(`<b>${name}</b> (${role})<br>Email: ${email} | Telp: ${phone}<br><span class="text-[11px] opacity-90">${desc}</span>`, 'info');
+        }
+
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            const bgClass = type === 'success' ? 'bg-emerald-700' : (type === 'error' ? 'bg-rose-600' : 'bg-slate-800');
+            toast.className = `${bgClass} text-white px-4 py-3 rounded-xl shadow-xl text-xs flex items-center gap-3 transition-all transform translate-y-2 pointer-events-auto max-w-sm`;
+            
+            toast.innerHTML = `
+                <i class="fa-solid ${type === 'success' ? 'fa-circle-check' : (type === 'error' ? 'fa-triangle-exclamation' : 'fa-info-circle')} text-base"></i>
+                <span class="flex-grow font-medium">${message}</span>
+                <button onclick="this.parentElement.remove()" class="text-white/70 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            `;
+            
+            toastContainer.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function updateUserUI() {
+            document.getElementById('userNameDisplay').innerText = currentUser.name;
+            document.getElementById('userDeptDisplay').innerText = currentUser.dept;
+            document.getElementById('settingsName').innerText = currentUser.name;
+            document.getElementById('settingsDept').innerText = currentUser.dept;
+            
+            const initials = currentUser.name.split(' ').map(n => n[0]).slice(0, 2).join('');
+            document.getElementById('userAvatar').innerText = initials || 'BP';
+
+            const badge = document.getElementById('userRoleBadge');
+            const setBadge = document.getElementById('settingsRole');
+            
+            if (currentUser.role === 'admin') {
+                badge.className = 'px-1.5 py-0.5 text-[9px] font-bold rounded uppercase bg-purple-100 text-purple-700';
+                badge.innerText = 'ADMIN';
+                setBadge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700 uppercase';
+                setBadge.innerText = 'ADMIN';
+                document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
+            } else {
+                badge.className = 'px-1.5 py-0.5 text-[9px] font-bold rounded uppercase bg-emerald-100 text-emerald-700';
+                badge.innerText = 'STAFF';
+                setBadge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700 uppercase';
+                setBadge.innerText = 'STAFF';
+                document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
+            }
+
+            renderAllModules();
+        }
+
+        function resetOrientationProgress() {
+            completedModules.clear();
+            document.getElementById('overallProgressBar').style.width = '0%';
+            document.getElementById('progressPercentText').innerText = '0% Selesai';
+            document.getElementById('progressBadge').innerText = '0/7';
+            document.querySelectorAll('[id^="check-tab-"]').forEach(el => el.classList.add('hidden'));
+            closeModal('settingsModal');
+            showToast('Progres handbook telah di-reset kembali ke 0%', 'info');
+        }
+
+        function resetAllCrudData() {
+            appData = JSON.parse(JSON.stringify(defaultData));
+            saveAppData();
+            renderAllModules();
+            closeModal('settingsModal');
+            showToast('Semua data modul telah dikembalikan ke data default Bank Permata!', 'success');
+        }
+
+        // Render Functions for Modules
+        function renderAllModules() {
+            renderOrgChart();
+            renderDuties();
+            renderStakeholders();
+            renderRules();
+            renderEthics();
+            renderFlows();
+            renderApps();
+        }
+
+        // Modul 01: Org Chart
+        function renderOrgChart() {
+            const container = document.getElementById('orgChartContainer');
+            if (!container) return;
+            const filterVal = document.getElementById('deptFilter') ? document.getElementById('deptFilter').value : 'all';
+            
+            let filteredNodes = appData.org;
+            if (filterVal !== 'all') {
+                filteredNodes = appData.org.filter(n => n.dept === filterVal);
+            }
+
+            let html = `<div class="min-w-[800px] flex flex-col items-center">`;
+            
+            const ceo = filteredNodes.find(n => n.dept === 'direksi');
+            if (ceo) {
+                html += `
+                    <div class="org-card org-node direksi mb-8 relative group">
+                        <div onclick="showOrgModal('${ceo.name}', '${ceo.role}', '${ceo.dept}', '${ceo.email}', '${ceo.phone}', '${ceo.desc}')" class="bg-gradient-to-b from-permata-900 to-slate-900 text-white rounded-xl p-4 w-64 shadow-lg border border-permata-600 cursor-pointer hover:scale-105 transition-transform text-center relative">
+                            <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-400 text-slate-900 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">Board of Directors</span>
+                            <div class="w-14 h-14 rounded-full bg-white/20 border-2 border-emerald-300 mx-auto mb-2 flex items-center justify-center font-bold text-lg">${ceo.name.split(' ').map(n=>n[0]).slice(0,2).join('')}</div>
+                            <h4 class="font-bold text-sm">${ceo.name}</h4>
+                            <p class="text-xs text-emerald-300">${ceo.role}</p>
+                        </div>
+                        ${currentUser.role === 'admin' ? `
+                            <div class="absolute -right-10 top-2 flex flex-col gap-1">
+                                <button onclick="openCrudModal('org', '${ceo.id}')" class="p-1.5 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="deleteCrudItem('org', '${ceo.id}')" class="p-1.5 bg-rose-600 text-white rounded-lg text-xs hover:bg-rose-700"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="w-0.5 h-8 bg-slate-300 mb-2"></div>
+                    <div class="w-3/4 h-0.5 bg-slate-300 mb-8"></div>
+                `;
+            }
+
+            const otherNodes = filteredNodes.filter(n => n.dept !== 'direksi');
+            html += `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">`;
+            
+            otherNodes.forEach(node => {
+                html += `
+                    <div class="flex flex-col items-center org-node ${node.dept} relative group">
+                        <div onclick="showOrgModal('${node.name}', '${node.role}', '${node.dept}', '${node.email}', '${node.phone}', '${node.desc}')" class="bg-white rounded-xl p-4 w-full shadow-md border-t-4 border-t-permata-700 border-x border-b border-slate-200 cursor-pointer hover:shadow-lg transition-all text-center">
+                            <div class="w-12 h-12 rounded-full bg-permata-100 text-permata-800 mx-auto mb-2 flex items-center justify-center font-bold text-sm">${node.name.split(' ').map(n=>n[0]).slice(0,2).join('')}</div>
+                            <h5 class="font-bold text-xs text-slate-800">${node.name}</h5>
+                            <p class="text-[11px] text-permata-700 font-medium">${node.role}</p>
+                        </div>
+                        ${currentUser.role === 'admin' ? `
+                            <div class="mt-2 flex gap-1">
+                                <button onclick="openCrudModal('org', '${node.id}')" class="px-2 py-1 bg-blue-600 text-white rounded text-[10px]"><i class="fa-solid fa-pen mr-1"></i> Edit</button>
+                                <button onclick="deleteCrudItem('org', '${node.id}')" class="px-2 py-1 bg-rose-600 text-white rounded text-[10px]"><i class="fa-solid fa-trash mr-1"></i> Hapus</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+            container.innerHTML = html;
+        }
+
+        // Modul 02: Duties & RACI
+        function renderDuties() {
+            const container = document.getElementById('dutiesContainer');
+            const d = appData.duties;
+
+            if (container) {
+                container.innerHTML = `
+                    <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 mb-3 text-permata-800 font-bold text-sm">
+                                <i class="fa-solid fa-sun text-amber-500"></i> Tugas Harian (Daily Routine)
+                            </div>
+                            <ul class="text-xs text-slate-600 space-y-2.5">
+                                ${d.daily.map(item => `
+                                    <li class="flex items-start gap-2">
+                                        <i class="fa-regular fa-square-check text-permata-600 mt-0.5"></i>
+                                        <span>${item}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 mb-3 text-permata-800 font-bold text-sm">
+                                <i class="fa-solid fa-calendar-week text-blue-500"></i> Tugas Mingguan (Weekly)
+                            </div>
+                            <ul class="text-xs text-slate-600 space-y-2.5">
+                                ${d.weekly.map(item => `
+                                    <li class="flex items-start gap-2">
+                                        <i class="fa-regular fa-square-check text-permata-600 mt-0.5"></i>
+                                        <span>${item}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 mb-3 text-permata-800 font-bold text-sm">
+                                <i class="fa-solid fa-chart-line text-emerald-500"></i> Bulanan & Evaluation KPI
+                            </div>
+                            <ul class="text-xs text-slate-600 space-y-2.5">
+                                ${d.monthly.map(item => `
+                                    <li class="flex items-start gap-2">
+                                        <i class="fa-regular fa-square-check text-permata-600 mt-0.5"></i>
+                                        <span>${item}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const tbody = document.getElementById('raciTableBody');
+            if (tbody) {
+                tbody.innerHTML = appData.raci.map(row => `
+                    <tr>
+                        <td class="px-4 py-3 font-medium text-slate-900">${row.task}</td>
+                        <td class="px-4 py-3 text-center font-bold text-emerald-600">${row.staff}</td>
+                        <td class="px-4 py-3 text-center font-bold text-blue-600">${row.buddy}</td>
+                        <td class="px-4 py-3 text-center font-bold text-amber-600">${row.spv}</td>
+                        <td class="px-4 py-3 text-center font-bold text-slate-400">${row.mgr}</td>
+                        ${currentUser.role === 'admin' ? `
+                            <td class="px-4 py-3 text-center">
+                                <button onclick="openCrudModal('raci', '${row.id}')" class="text-blue-600 hover:text-blue-800 mr-2"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="deleteCrudItem('raci', '${row.id}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        ` : ''}
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // Modul 03: Stakeholders
+        function renderStakeholders() {
+            const grid = document.getElementById('stakeholdersGrid');
+            if (!grid) return;
+            let html = '';
+
+            appData.stakeholders.forEach(item => {
+                html += `
+                    <div class="sh-card ${item.type} border border-slate-200 rounded-xl p-4 hover:shadow-md transition-shadow bg-white flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-${item.color}-100 text-${item.color}-700 flex items-center justify-center font-bold text-xs uppercase">
+                                        ${item.title.substring(0,2)}
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-sm text-slate-900">${item.title}</h4>
+                                        <span class="inline-block bg-${item.type === 'internal' ? 'emerald' : 'purple'}-50 text-${item.type === 'internal' ? 'emerald' : 'purple'}-700 text-[10px] font-semibold px-2 py-0.5 rounded uppercase">${item.type}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-slate-600 mb-3">${item.desc}</p>
+                        </div>
+                        <div>
+                            <div class="border-t border-slate-100 pt-3 text-xs space-y-1 text-slate-500 mb-3">
+                                <p><i class="fa-solid fa-user text-slate-400 w-4"></i> PIC: ${item.pic}</p>
+                                <p><i class="fa-solid fa-envelope text-slate-400 w-4"></i> ${item.email}</p>
+                                <p><i class="fa-solid fa-location-dot text-slate-400 w-4"></i> ${item.location}</p>
+                            </div>
+                            <button onclick="window.open('${item.sourceUrl || '#'}', '_blank')" class="w-full py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded-lg flex items-center justify-center gap-1.5 transition-colors">
+                                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Buka Sumber Data Terkait
+                            </button>
+                        </div>
+                        ${currentUser.role === 'admin' ? `
+                            <div class="mt-3 pt-2 border-t border-slate-100 flex justify-end gap-1.5">
+                                <button onclick="openCrudModal('stakeholder', '${item.id}')" class="px-2 py-1 bg-blue-50 text-blue-700 rounded text-[11px]"><i class="fa-solid fa-pen"></i> Edit</button>
+                                <button onclick="deleteCrudItem('stakeholder', '${item.id}')" class="px-2 py-1 bg-rose-50 text-rose-700 rounded text-[11px]"><i class="fa-solid fa-trash"></i> Hapus</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            grid.innerHTML = html;
+        }
+
+        // Modul 04: Rules Accordion
+        function renderRules() {
+            const accordion = document.getElementById('rulesAccordion');
+            if (!accordion) return;
+            accordion.innerHTML = appData.rules.map(rule => `
+                <div class="rule-item border border-slate-200 rounded-xl overflow-hidden">
+                    <button onclick="toggleAccordion('rule-${rule.id}')" class="w-full bg-slate-50 p-4 text-left font-semibold text-xs sm:text-sm text-slate-800 flex justify-between items-center hover:bg-slate-100 transition-colors">
+                        <span class="flex items-center gap-2">
+                            <i class="fa-solid ${rule.icon} text-permata-700"></i> ${rule.title}
+                        </span>
+                        <div class="flex items-center gap-2">
+                            ${currentUser.role === 'admin' ? `
+                                <span onclick="event.stopPropagation(); openCrudModal('rule', '${rule.id}')" class="p-1 text-blue-600 rounded text-xs"><i class="fa-solid fa-pen"></i></span>
+                                <span onclick="event.stopPropagation(); deleteCrudItem('rule', '${rule.id}')" class="p-1 text-rose-600 rounded text-xs"><i class="fa-solid fa-trash"></i></span>
+                            ` : ''}
+                            <i class="fa-solid fa-chevron-down text-slate-400 transition-transform" id="icon-rule-${rule.id}"></i>
+                        </div>
+                    </button>
+                    <div id="rule-${rule.id}" class="hidden p-4 bg-white border-t border-slate-200 text-xs text-slate-600 leading-relaxed space-y-2">
+                        ${rule.body}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Modul 05: Etika & Pedoman (NEW FROM INFOGRAPHIC)
+        function renderEthics() {
+            const container = document.getElementById('ethicsContainer');
+            if (!container) return;
+            container.innerHTML = appData.ethics.map(item => `
+                <div class="p-5 border border-slate-200 rounded-2xl bg-white hover:shadow-md transition-shadow flex items-start gap-4 relative">
+                    <div class="w-12 h-12 rounded-xl bg-${item.color}-100 text-${item.color}-700 flex items-center justify-center text-xl font-bold flex-shrink-0">
+                        <i class="fa-solid ${item.icon}"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm text-slate-900 mb-1">${item.title}</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">${item.desc}</p>
+                    </div>
+                    ${currentUser.role === 'admin' ? `
+                        <div class="absolute top-3 right-3 flex gap-1">
+                            <button onclick="openCrudModal('ethics', '${item.id}')" class="text-blue-600 text-xs p-1"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteCrudItem('ethics', '${item.id}')" class="text-rose-600 text-xs p-1"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Modul 06: Flow Process
+        function renderFlows() {
+            const container = document.getElementById('flowProcessContainer');
+            if (!container) return;
+            const flows = appData.flows;
+
+            container.innerHTML = `
+                <div class="flow-panel space-y-4">
+                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">Timeline Onboarding Staff Baru Bank Permata</h3>
+                    <div class="relative border-l-2 border-permata-600 pl-6 ml-3 space-y-6">
+                        ${flows.map(item => `
+                            <div class="relative group">
+                                <span class="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-permata-600 border-4 border-white"></span>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-bold text-permata-800 bg-permata-50 px-2 py-0.5 rounded border border-permata-200">${item.badge}</span>
+                                    ${currentUser.role === 'admin' ? `
+                                        <div class="flex gap-1">
+                                            <button onclick="openCrudModal('flow', '${item.id}')" class="text-blue-600 text-xs hover:underline"><i class="fa-solid fa-pen"></i></button>
+                                            <button onclick="deleteCrudItem('flow', '${item.id}')" class="text-rose-600 text-xs hover:underline ml-1"><i class="fa-solid fa-trash"></i></button>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                                <h4 class="font-bold text-sm text-slate-900 mt-1">${item.title}</h4>
+                                <p class="text-xs text-slate-600 mt-1">${item.desc}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Modul 07: Support Apps
+        function renderApps() {
+            const grid = document.getElementById('appsGrid');
+            if (!grid) return;
+            grid.innerHTML = appData.apps.map(app => `
+                <div class="border border-slate-200 rounded-xl p-5 bg-slate-50 hover:bg-white hover:shadow-md transition-all flex flex-col justify-between relative">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-12 h-12 rounded-xl bg-${app.color}-600 text-white flex items-center justify-center font-bold text-xl shadow-md">
+                                <i class="fa-solid ${app.icon}"></i>
+                            </div>
+                            <span class="bg-${app.color}-100 text-${app.color}-700 text-[10px] font-bold px-2 py-0.5 rounded-full">${app.tag}</span>
+                        </div>
+                        <h4 class="font-bold text-sm text-slate-900">${app.title}</h4>
+                        <p class="text-xs text-slate-500 mt-1">${app.desc}</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between">
+                        <button onclick="openAppGuide('${app.title}', '${app.guide}')" class="text-xs text-permata-700 hover:text-permata-900 font-bold flex items-center gap-1">
+                            Panduan Akses <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </button>
+                        ${currentUser.role === 'admin' ? `
+                            <div class="flex gap-1">
+                                <button onclick="openCrudModal('app', '${app.id}')" class="p-1 text-blue-600 rounded"><i class="fa-solid fa-pen text-xs"></i></button>
+                                <button onclick="deleteCrudItem('app', '${app.id}')" class="p-1 text-rose-600 rounded"><i class="fa-solid fa-trash text-xs"></i></button>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // CRUD Modal Builder
+        function openCrudModal(module, id = null) {
+            document.getElementById('crudTargetModule').value = module;
+            document.getElementById('crudItemId').value = id || '';
+            const fieldsContainer = document.getElementById('crudFieldsContainer');
+            const modalTitle = document.getElementById('crudModalTitle');
+
+            modalTitle.innerText = id ? `Edit Data ${module.toUpperCase()}` : `Tambah Data ${module.toUpperCase()}`;
+
+            let fieldsHtml = '';
+
+            if (module === 'org') {
+                const item = id ? appData.org.find(x => x.id === id) : {};
+                fieldsHtml = `
+                    <div><label class="font-semibold text-slate-700">Nama Lengkap & Gelar</label><input type="text" id="field_name" value="${item.name || ''}" required class="w-full mt-1 p-2 border rounded-lg"></div>
+                    <div><label class="font-semibold text-slate-700">Jabatan</label><input type="text" id="field_role" value="${item.role || ''}" required class="w-full mt-1 p-2 border rounded-lg"></div>
+                    <div>
+                        <label class="font-semibold text-slate-700">Divisi</label>
+                        <select id="field_dept" class="w-full mt-1 p-2 border rounded-lg">
+                            <option value="direksi" ${item.dept==='direksi'?'selected':''}>Direksi & Board</option>
+                            <option value="hrd" ${item.dept==='hrd'?'selected':''}>Human Capital</option>
+                            <option value="it" ${item.dept==='it'?'selected':''}>Technology & Operations</option>
+                            <option value="ops" ${item.dept==='ops'?'selected':''}>Retail & Wholesale Banking</option>
+                            <option value="finance" ${item.dept==='finance'?'selected':''}>Finance</option>
+                        </select>
+                    </div>
+                    <div><label class="font-semibold text-slate-700">Email</label><input type="email" id="field_email" value="${item.email || ''}" required class="w-full mt-1 p-2 border rounded-lg"></div>
+                    <div><label class="font-semibold text-slate-700">Telepon</label><input type="text" id="field_phone" value="${item.phone || ''}" required class="w-full mt-1 p-2 border rounded-lg"></div>
+                    <div><label class="font-semibold text-slate-700">Deskripsi Peran</label><textarea id="field_desc" class="w-full mt-1 p-2 border rounded-lg">${item.desc || ''}</textarea></div>
+                `;
+            } else if (module === 'stakeholder') {
+                const item = id ? appData.stakeholders.find(x => x.id === id) : {};
+                fieldsHtml = `
+                    <div><label class="font-semibold text-slate-700">Nama Pihak / Unit</label><input type="text" id="field_title" value="${item.title || ''}" required class="w-full mt-1 p-2 border rounded-lg"></div>
+                    <div>
+                        <label class="font-semibold text-slate-700">Tipe</label>
+                        <select id="field_type" class="w-full mt-1 p-2 border rounded-lg">
+                            <option value="internal" ${item.type==='internal'?'selected':''}>Internal</option>
+                            <option value="external" ${item.type==='external'?'selected':''}>Eksternal</option>
+                        </select>
+                    </div>
+                    <div><label class="font-semibold text-slate-700">PIC</label><input type="text" id="field_pic" value="${item.pic || ''}" required class="w-full mt-1 p-2 border rounded-lg"></div>
+                    <div><label class="font-semibold text-slate-700">Email Kontak</label><input type="text" id="field_email" value="${item.email || ''}" class="w-full mt-1 p-2 border rounded-lg"></div>
+                    <div><label class="font-semibold text-slate-700">Lokasi</label><input type="text" id="field_location" value="${item.location || ''}" class="w-full mt-1 p-2 border rounded-lg"></div>
+                    <div><label class="font-semibold text-slate-700">Deskripsi</label><textarea id="field_desc" class="w-full mt-1 p-2 border rounded-lg">${item.desc || ''}</textarea></div>
+                `;
+            } else if (module === 'ethics') {
+                const item = id ? appData.ethics.find(x => x.id === id) : {};
+                fieldsHtml = `
+                    <div><label class="font-semibold text-slate-700">Judul Etika / Nilai</label><input type="text" id="field_title" value="${item.title || ''}" required class="w-full mt-1 p-2 border rounded-lg"></div>
+                    <div><label class="font-semibold text-slate-700">Penjelasan Pedoman Perilaku</label><textarea id="field_desc" class="w-full mt-1 p-2 border rounded-lg" rows="3">${item.desc || ''}</textarea></div>
+                `;
+            } else if (module === 'raci') {
+                const item = id ? appData.raci.find(x => x.id === id) : {};
+                fieldsHtml = `
+                    <div><label class="font-semibold text-slate-700">Aktivitas</label><input type="text" id="field_task" value="${item.task || ''}" required class="w-full mt-1 p-2 border rounded-lg"></div>
+                    <div class="grid grid-cols-4 gap-2">
+                        <div><label class="font-semibold text-slate-700">Staff</label><input type="text" id="field_staff" value="${item.staff || 'R'}" maxlength="1" class="w-full mt-1 p-2 border rounded-lg text-center uppercase"></div>
+                        <div><label class="font-semibold text-slate-700">Buddy</label><input type="text" id="field_buddy" value="${item.buddy || 'C'}" maxlength="1" class="w-full mt-1 p-2 border rounded-lg text-center uppercase"></div>
+                        <div><label class="font-semibold text-slate-700">Lead</label><input type="text" id="field_spv" value="${item.spv || 'A'}" maxlength="1" class="w-full mt-1 p-2 border rounded-lg text-center uppercase"></div>
+                        <div><label class="font-semibold text-slate-700">Div Head</label><input type="text" id="field_mgr" value="${item.mgr || 'I'}" maxlength="1" class="w-full mt-1 p-2 border rounded-lg text-center uppercase"></div>
+                    </div>
+                `;
+            } else if (module === 'rule') {
+                const item = id ? appData.rules.find(x => x.id === id) : {};
+                fieldsHtml = `
+                    <div><label class="font-semibold text-slate-700">Judul Aturan</label><input type="text" id="field_title" value="${item.title || ''}" required class="w-full mt-1 p-2 border rounded-lg"></div>
+                    <div><label class="font-semibold text-slate-700">Isi Ketentuan (HTML Format)</label><textarea id="field_body" class="w-full mt-1 p-2 border rounded-lg" rows="4">${item.body || ''}</textarea></div>
+                `;
+            } else if (module === 'flow') {
+                const item = id ? appData.flows.find(x => x.id === id) : {};
+                fieldsHtml = `
+                    <div><label class="font-semibold text-slate-700">Badge Waktu</label><input type="text" id="field_badge" value="${item.badge || ''}" required class="w-full mt-1 p-2 border rounded-lg"></div>
+                    <div><label class="font-semibold text-slate-700">Judul Tahap</label><input type="text" id="field_title" value="${item.title || ''}" required class="w-full mt-1 p-2 border rounded-lg"></div>
+                    <div><label class="font-semibold text-slate-700">Deskripsi Alur</label><textarea id="field_desc" class="w-full mt-1 p-2 border rounded-lg">${item.desc || ''}</textarea></div>
+                `;
+            } else if (module === 'app') {
+                const item = id ? appData.apps.find(x => x.id === id) : {};
+                fieldsHtml = `
+                    <div><label class="font-semibold text-slate-700">Nama Aplikasi</label><input type="text" id="field_title" value="${item.title || ''}" required class="w-full mt-1 p-2 border rounded-lg"></div>
+                    <div><label class="font-semibold text-slate-700">Tag Kategori</label><input type="text" id="field_tag" value="${item.tag || 'Wajib'}" required class="w-full mt-1 p-2 border rounded-lg"></div>
+                    <div><label class="font-semibold text-slate-700">Deskripsi Singkat</label><input type="text" id="field_desc" value="${item.desc || ''}" required class="w-full mt-1 p-2 border rounded-lg"></div>
+                    <div><label class="font-semibold text-slate-700">Panduan Penggunaan</label><textarea id="field_guide" class="w-full mt-1 p-2 border rounded-lg">${item.guide || ''}</textarea></div>
+                `;
+            }
+
+            fieldsContainer.innerHTML = fieldsHtml;
+            openModal('crudModal');
+        }
+
+        function handleCrudSubmit(e) {
+            e.preventDefault();
+            const module = document.getElementById('crudTargetModule').value;
+            const id = document.getElementById('crudItemId').value;
+            const isEdit = Boolean(id);
+            const newId = id || String(Date.now());
+
+            if (module === 'org') {
+                const newItem = {
+                    id: newId,
+                    name: document.getElementById('field_name').value,
+                    role: document.getElementById('field_role').value,
+                    dept: document.getElementById('field_dept').value,
+                    email: document.getElementById('field_email').value,
+                    phone: document.getElementById('field_phone').value,
+                    desc: document.getElementById('field_desc').value
+                };
+                if (isEdit) {
+                    const idx = appData.org.findIndex(x => x.id === id);
+                    if (idx !== -1) appData.org[idx] = newItem;
+                } else appData.org.push(newItem);
+            } else if (module === 'stakeholder') {
+                const colors = ['emerald', 'blue', 'amber', 'purple', 'rose'];
+                const newItem = {
+                    id: newId,
+                    title: document.getElementById('field_title').value,
+                    type: document.getElementById('field_type').value,
+                    pic: document.getElementById('field_pic').value,
+                    email: document.getElementById('field_email').value,
+                    location: document.getElementById('field_location').value,
+                    desc: document.getElementById('field_desc').value,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    sourceUrl: 'https://www.permatabank.com'
+                };
+                if (isEdit) {
+                    const idx = appData.stakeholders.findIndex(x => x.id === id);
+                    if (idx !== -1) appData.stakeholders[idx] = newItem;
+                } else appData.stakeholders.push(newItem);
+            } else if (module === 'ethics') {
+                const colors = ['emerald', 'rose', 'blue', 'amber', 'purple'];
+                const newItem = {
+                    id: newId,
+                    title: document.getElementById('field_title').value,
+                    desc: document.getElementById('field_desc').value,
+                    icon: 'fa-scale-balanced',
+                    color: colors[Math.floor(Math.random() * colors.length)]
+                };
+                if (isEdit) {
+                    const idx = appData.ethics.findIndex(x => x.id === id);
+                    if (idx !== -1) appData.ethics[idx] = newItem;
+                } else appData.ethics.push(newItem);
+            } else if (module === 'raci') {
+                const newItem = {
+                    id: newId,
+                    task: document.getElementById('field_task').value,
+                    staff: document.getElementById('field_staff').value,
+                    buddy: document.getElementById('field_buddy').value,
+                    spv: document.getElementById('field_spv').value,
+                    mgr: document.getElementById('field_mgr').value
+                };
+                if (isEdit) {
+                    const idx = appData.raci.findIndex(x => x.id === id);
+                    if (idx !== -1) appData.raci[idx] = newItem;
+                } else appData.raci.push(newItem);
+            } else if (module === 'rule') {
+                const newItem = {
+                    id: newId,
+                    title: document.getElementById('field_title').value,
+                    icon: 'fa-shield-halved',
+                    body: document.getElementById('field_body').value
+                };
+                if (isEdit) {
+                    const idx = appData.rules.findIndex(x => x.id === id);
+                    if (idx !== -1) appData.rules[idx] = newItem;
+                } else appData.rules.push(newItem);
+            } else if (module === 'flow') {
+                const newItem = {
+                    id: newId,
+                    badge: document.getElementById('field_badge').value,
+                    title: document.getElementById('field_title').value,
+                    desc: document.getElementById('field_desc').value,
+                    color: 'permata-600'
+                };
+                if (isEdit) {
+                    const idx = appData.flows.findIndex(x => x.id === id);
+                    if (idx !== -1) appData.flows[idx] = newItem;
+                } else appData.flows.push(newItem);
+            } else if (module === 'app') {
+                const colors = ['emerald', 'rose', 'blue', 'purple', 'amber'];
+                const newItem = {
+                    id: newId,
+                    title: document.getElementById('field_title').value,
+                    tag: document.getElementById('field_tag').value,
+                    icon: 'fa-laptop-code',
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    desc: document.getElementById('field_desc').value,
+                    guide: document.getElementById('field_guide').value
+                };
+                if (isEdit) {
+                    const idx = appData.apps.findIndex(x => x.id === id);
+                    if (idx !== -1) appData.apps[idx] = newItem;
+                } else appData.apps.push(newItem);
+            }
+
+            saveAppData();
+            renderAllModules();
+            closeModal('crudModal');
+            showToast(`Data ${module.toUpperCase()} berhasil disimpan!`, 'success');
+        }
+
+        function deleteCrudItem(module, id) {
+            if (currentUser.role !== 'admin') return;
+            
+            if (module === 'org') appData.org = appData.org.filter(x => x.id !== id);
+            else if (module === 'stakeholder') appData.stakeholders = appData.stakeholders.filter(x => x.id !== id);
+            else if (module === 'ethics') appData.ethics = appData.ethics.filter(x => x.id !== id);
+            else if (module === 'raci') appData.raci = appData.raci.filter(x => x.id !== id);
+            else if (module === 'rule') appData.rules = appData.rules.filter(x => x.id !== id);
+            else if (module === 'flow') appData.flows = appData.flows.filter(x => x.id !== id);
+            else if (module === 'app') appData.apps = appData.apps.filter(x => x.id !== id);
+
+            saveAppData();
+            renderAllModules();
+            showToast(`Item ${module.toUpperCase()} berhasil dihapus.`, 'info');
+        }
+
+        function markModuleComplete(tabId) {
+            completedModules.add(tabId);
+            
+            const checkBadge = document.getElementById('check-' + tabId);
+            if (checkBadge) checkBadge.classList.remove('hidden');
+
+            const count = completedModules.size;
+            const percentage = Math.round((count / totalModules) * 100);
+
+            document.getElementById('overallProgressBar').style.width = percentage + '%';
+            document.getElementById('progressPercentText').innerText = percentage + '% Selesai';
+            document.getElementById('progressBadge').innerText = count + '/' + totalModules;
+
+            if (count === totalModules) {
+                showToast('Selamat! Anda telah menyelesaikan pembacaan ke-7 modul Handbook Staff Baru Bank Permata!', 'success');
+            } else {
+                showToast(`Modul ${tabId.replace('tab-','')} ditandai selesai!`, 'success');
+            }
+        }
+
+        function filterStakeholders(type, event) {
+            const cards = document.querySelectorAll('.sh-card');
+            cards.forEach(card => {
+                if (type === 'all' || card.classList.contains(type)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            if (event && event.target) {
+                document.querySelectorAll('.sh-filter-btn').forEach(btn => {
+                    btn.classList.remove('bg-permata-700', 'text-white');
+                    btn.classList.add('bg-slate-100', 'text-slate-600');
+                });
+                event.target.classList.remove('bg-slate-100', 'text-slate-600');
+                event.target.classList.add('bg-permata-700', 'text-white');
+            }
+        }
+
+        // Window Onload Initialization
+        window.onload = function() {
+            const savedSession = sessionStorage.getItem('onboardingSession');
+            if (savedSession) {
+                try {
+                    currentUser = JSON.parse(savedSession);
+                    document.getElementById('loginScreen').classList.add('hidden');
+                    document.getElementById('mainPortalApp').classList.remove('hidden');
+                    updateUserUI();
+                    switchTab('tab-01');
+                    return;
+                } catch (err) {
+                    console.error('Session parse error:', err);
+                }
+            }
+
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('mainPortalApp').classList.add('hidden');
+        };
+    </script>
+</body>
+</html>
